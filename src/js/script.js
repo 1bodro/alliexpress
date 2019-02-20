@@ -28,7 +28,12 @@ goodsBtn.forEach(function(btn,i){
         empty=cartWrapper.querySelector('.empty');
 
         trigger.remove();
-        removeBtn.classList.add('goods__item-remove');
+        showConfirm ();
+        calcGoods(1);
+
+
+
+        removeBtn.classList.add('goods__item-remove'); //добавление класса
         removeBtn.innerHTML='&times';
         item.appendChild(removeBtn);
 
@@ -38,6 +43,65 @@ goodsBtn.forEach(function(btn,i){
             empty.remove()
         }
 
+        calcTotal();
+        removeFromCart();
     });
 });
+function sliceTitle(){
+titles.forEach(function(item)
+   {
+     if (item.textContent.length<70){
+       return;
+      }   else {
+            const str=item.textContent.slice(0, 71) + '...';
+            //`${item.textContent.slice(0,71)}...`; ES6
+            item.textContent=str;
+      }
+   });
+};
+sliceTitle();
+function showConfirm (){
+     confirm.style.display='block';
+     let counter=100;
+     const id=setInterval(frame,10);
+     function frame(){
+         if (counter==10){
+             clearInterval(id);
+             confirm.style.display='none';
+         } else{
+            counter--;
+            confirm.style.transform =`translateY(-${counter}px)`;
+            confirm.style.opacity ='.'+ counter;
+         }
+         
+     }
+}
+function calcGoods(i){
+    const items=cartWrapper.querySelectorAll(".goods__item");
+    badge.textContent=items.length+i;
+}
+function calcTotal(){
+    const prices=document.querySelectorAll('.cart__wrapper>.goods__item>.goods__price>span');
+    let total=0; //почитать про hoisting
+    prices.forEach(function(item){
+        total+=+item.textContent;//+ превращает item.textContent в число
+    });
+    totalCost.textContent=total;
+}
+function removeFromCart(){
+    const removeBtn=cartWrapper.querySelectorAll('.goods__item-remove');
+    removeBtn.forEach(function(btn){
+        btn.addEventListener('click',()=>{
+            btn.parentElement.remove();
+            calcGoods(0);
+            calcTotal();
+            if (cartWrapper.querySelectorAll(".goods__item").length==0){
+               let clearBasket=document.createElement('div').classList.add('empty');
+               clearBasket.classList.add('empty'); //добавление класса
+               clearBasket.textContent='Ваша корзина пока пуста';
+               cartWrapper.appendChild(clearBasket);
+            }
+        })
+    })
+}
 });
